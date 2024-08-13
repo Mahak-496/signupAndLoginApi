@@ -48,19 +48,17 @@ public class UserController {
         try {
 
             LoginResponseDto response = userService.loginUser(loginRequestDto);
-
-
             ApiResponse apiResponse = ApiResponse.builder()
                     .message("Login successful")
                     .data(response)
                     .statusCode(HttpStatus.OK.value())
-                    .build();
+                   .build();
 
             return ResponseEntity.ok(apiResponse);
-        } catch (AuthenticationException e) {
+       } catch (AuthenticationException e) {
             ApiResponse apiResponse = ApiResponse.builder()
                     .message("Invalid email or password")
-                    .statusCode(HttpStatus.INTERNAL_SERVER_ERROR.value())
+                   .statusCode(HttpStatus.INTERNAL_SERVER_ERROR.value())
                     .build();
 
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(apiResponse);
@@ -73,6 +71,7 @@ public class UserController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(apiResponse);
         }
     }
+
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<Object> handleException(Exception e) {
