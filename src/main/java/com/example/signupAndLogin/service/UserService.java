@@ -10,6 +10,7 @@ import com.example.signupAndLogin.repository.UserRepository;
 import com.example.signupAndLogin.utils.PasswordUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 //import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import javax.naming.AuthenticationException;
@@ -19,8 +20,8 @@ public class UserService implements IUserService {
     @Autowired
     private UserRepository userRepository;
 
-//    @Autowired
-//    private BCryptPasswordEncoder passwordEncoder;
+    @Autowired
+    private BCryptPasswordEncoder passwordEncoder;
 
     @Override
     public RegistrationResponseDto registerUser(RegistrationRequestDto registrationRequestDto) {
@@ -31,8 +32,10 @@ public class UserService implements IUserService {
         User user = UserMapper.toUserEntity(registrationRequestDto);
 //        user.setPassword(user.getPassword());
 
-        String hashedPassword = PasswordUtils.hashPassword(user.getPassword());
-        user.setPassword(hashedPassword);
+//        String hashedPassword = PasswordUtils.hashPassword(user.getPassword());
+//        user.setPassword(hashedPassword);
+
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
 
         User registeredUser = userRepository.save(user);
         return UserMapper.toRegistrationResponseDTO(registeredUser);
@@ -41,7 +44,8 @@ public class UserService implements IUserService {
     @Override
     public LoginResponseDto loginUser(LoginRequestDto loginRequestDto) throws AuthenticationException {
         User user = userRepository.findByEmail(loginRequestDto.getEmail());
-        if (user == null || !PasswordUtils.checkPassword(loginRequestDto.getPassword(), user.getPassword())) {
+        if (user == null || !passwordEncoder.matches(loginRequestDto.getPassword(), user.getPassword())) {
+//            if (user == null || !PasswordUtils.checkPassword(loginRequestDto.getPassword(), user.getPassword())) {
             throw new AuthenticationException("Invalid email or password");
         }
 

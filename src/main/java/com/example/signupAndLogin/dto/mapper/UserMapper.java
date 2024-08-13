@@ -27,8 +27,7 @@ public class UserMapper {
                 .gender(user.getGender())
                 .phoneNumber(user.getPhoneNumber())
                 .Address(user.getAddress())
-                .status("Success")
-                .message("User registered successfully.")
+
                 .build();
     }
 
@@ -47,8 +46,6 @@ public class UserMapper {
                 .gender(user.getGender())
                 .phoneNumber(user.getPhoneNumber())
                 .Address(user.getAddress())
-                .status("Success")
-                .message("Login successful")
                 .build();
     }
 }

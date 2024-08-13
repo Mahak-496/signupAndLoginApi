@@ -24,7 +24,7 @@ public class UserController {
     @Autowired
     private UserService userService;
 
-    @PostMapping("/register")
+    @PostMapping("/api/auth/register")
     public ResponseEntity<Object> registerUser(@RequestBody @Validated RegistrationRequestDto registrationRequestDto) {
         try {
             RegistrationResponseDto response = userService.registerUser(registrationRequestDto);
@@ -43,7 +43,7 @@ public class UserController {
         }
     }
 
-    @PostMapping("/login")
+    @PostMapping("/api/auth/login")
     public ResponseEntity<ApiResponse> loginUser(@RequestBody LoginRequestDto loginRequestDto) {
         try {
 
