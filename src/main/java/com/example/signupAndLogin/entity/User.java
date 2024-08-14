@@ -7,6 +7,7 @@ import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import lombok.*;
+import org.antlr.v4.runtime.Token;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 import org.springframework.security.core.GrantedAuthority;
@@ -61,6 +62,9 @@ public class User implements UserDetails {
     @UpdateTimestamp
     @Column(name = "updated_at")
     private Date updatedAt;
+
+    @Column( name = "user_Token")
+    private String token;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

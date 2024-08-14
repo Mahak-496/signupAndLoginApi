@@ -101,14 +101,8 @@ public class UserController {
     @GetMapping("/userDetails/token")
     public ResponseEntity<?> getUserByToken(@RequestHeader("Authorization") String authorizationHeader) {
         try {
-
-            if (authorizationHeader == null || !authorizationHeader.startsWith("Bearer ")) {
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Invalid Authorization header format");
-            }
             String token = authorizationHeader.substring(7);
-
             RegistrationResponseDto user = userService.getUserByToken(token);
-
             return ResponseEntity.ok(user);
 
         } catch (AuthenticationException e) {
