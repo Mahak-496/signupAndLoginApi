@@ -3,19 +3,19 @@ import com.example.signupAndLogin.dto.request.LoginRequestDto;
 import com.example.signupAndLogin.dto.request.RegistrationRequestDto;
 import com.example.signupAndLogin.dto.response.LoginResponseDto;
 import com.example.signupAndLogin.dto.response.RegistrationResponseDto;
+import com.example.signupAndLogin.entity.User;
 import com.example.signupAndLogin.service.UserService;
 import com.example.signupAndLogin.utils.ApiResponse;
 import com.example.signupAndLogin.utils.ResponseSender;
+import org.antlr.v4.runtime.Token;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.naming.AuthenticationException;
+import java.util.Optional;
 
 @RestController
 
@@ -98,8 +98,26 @@ public class UserController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(apiResponse);
         }
     }
+    @GetMapping("/userDetails/token")
+    public ResponseEntity<?> getUserByToken(@RequestHeader("Authorization") String authorizationHeader) {
+        try {
 
+            if (authorizationHeader == null || !authorizationHeader.startsWith("Bearer ")) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Invalid Authorization header format");
+            }
+            String token = authorizationHeader.substring(7);
 
+            RegistrationResponseDto user = userService.getUserByToken(token);
+
+            return ResponseEntity.ok(user);
+
+        } catch (AuthenticationException e) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(e.getMessage());
+
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An error occurred while processing the request");
+        }
+    }
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<Object> handleException(Exception e) {

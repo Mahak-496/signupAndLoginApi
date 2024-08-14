@@ -8,7 +8,7 @@ import org.springframework.stereotype.Component;
 import java.util.Date;
 
 @Component
-public class JwtHelper {
+public class JwtService {
     private static final String SECRET_KEY = "Hello@123";
 
     public String generateToken(String email) {

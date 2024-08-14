@@ -25,7 +25,7 @@ public class SecurityConfiguration {
     @Autowired
     private  UserRepository userRepository;
     @Autowired
-    private JwtHelper jwtHelper;
+    private JwtService jwtHelper;
     @Autowired
     private JwtAuthenticationFilter jwtAuthenticationFilter;
     @Autowired

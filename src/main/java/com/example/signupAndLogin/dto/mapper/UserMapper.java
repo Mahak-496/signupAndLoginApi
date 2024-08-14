@@ -21,13 +21,11 @@ public class UserMapper {
 
     public static RegistrationResponseDto toRegistrationResponseDTO(User user) {
         return RegistrationResponseDto.builder()
-                .id(user.getId())
                 .username(user.getUsername())
                 .email(user.getEmail())
                 .gender(user.getGender())
                 .phoneNumber(user.getPhoneNumber())
                 .Address(user.getAddress())
-
                 .build();
     }
 
@@ -40,7 +38,6 @@ public class UserMapper {
 
     public static LoginResponseDto toLoginResponseDTO(User user, String token) {
         return LoginResponseDto.builder()
-                .id(user.getId())
                 .username(user.getUsername())
                 .email(user.getEmail())
                 .gender(user.getGender())

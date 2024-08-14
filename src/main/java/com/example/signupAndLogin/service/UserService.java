@@ -163,7 +163,7 @@
 
 package com.example.signupAndLogin.service;
 
-import com.example.signupAndLogin.configuration.JwtHelper;
+import com.example.signupAndLogin.configuration.JwtService;
 import com.example.signupAndLogin.dto.mapper.UserMapper;
 import com.example.signupAndLogin.dto.request.LoginRequestDto;
 import com.example.signupAndLogin.dto.request.RegistrationRequestDto;
@@ -187,13 +187,13 @@ public class UserService implements IUserService {
     private final UserRepository userRepository;
     private final BCryptPasswordEncoder passwordEncoder;
     private final AuthenticationManager authenticationManager;
-    private final JwtHelper jwtHelper;
+    private final JwtService jwtHelper;
 
     @Autowired
     public UserService(UserRepository userRepository,
                        BCryptPasswordEncoder passwordEncoder,
                        AuthenticationManager authenticationManager,
-                       JwtHelper jwtHelper) {
+                       JwtService jwtHelper) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.authenticationManager = authenticationManager;
@@ -252,5 +252,29 @@ public class UserService implements IUserService {
             throw new AuthenticationException("Invalid email or password");
         }
     }
+
+
+    @Override
+    public RegistrationResponseDto getUserByToken(String token) throws AuthenticationException {
+        try {
+            String username = jwtHelper.extractUsername(token);
+
+            if (username == null || jwtHelper.isTokenExpired(token)) {
+                throw new AuthenticationException("Invalid or expired token") {};
+            }
+
+            User user= userRepository.findByEmail(username)
+                    .orElseThrow(() -> new AuthenticationException("User not found") {});
+
+
+            return UserMapper.toRegistrationResponseDTO(user);
+
+
+        } catch (Exception e) {
+            throw new RuntimeException("An error occurred while fetching user details", e);
+        }
+    }
+
+
 }
 
