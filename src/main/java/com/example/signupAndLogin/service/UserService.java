@@ -163,6 +163,7 @@
 
 package com.example.signupAndLogin.service;
 
+import com.example.signupAndLogin.configuration.JwtHelper;
 import com.example.signupAndLogin.dto.mapper.UserMapper;
 import com.example.signupAndLogin.dto.request.LoginRequestDto;
 import com.example.signupAndLogin.dto.request.RegistrationRequestDto;
@@ -186,14 +187,17 @@ public class UserService implements IUserService {
     private final UserRepository userRepository;
     private final BCryptPasswordEncoder passwordEncoder;
     private final AuthenticationManager authenticationManager;
+    private final JwtHelper jwtHelper;
 
     @Autowired
     public UserService(UserRepository userRepository,
                        BCryptPasswordEncoder passwordEncoder,
-                       AuthenticationManager authenticationManager) {
+                       AuthenticationManager authenticationManager,
+                       JwtHelper jwtHelper) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.authenticationManager = authenticationManager;
+        this.jwtHelper = jwtHelper;
     }
 
     @Override
@@ -208,27 +212,45 @@ public class UserService implements IUserService {
         return UserMapper.toRegistrationResponseDTO(registeredUser);
     }
 
+//    @Override
+//    public LoginResponseDto loginUser(LoginRequestDto loginRequestDto) throws AuthenticationException {
+//        try {
+//            Authentication authentication = authenticationManager.authenticate(
+//                    new UsernamePasswordAuthenticationToken(
+//                            loginRequestDto.getEmail().toLowerCase(),
+//                            loginRequestDto.getPassword()
+//                    )
+//            );
+//
+//            User user = userRepository.findByEmail(loginRequestDto.getEmail())
+//                    .orElseThrow(() -> new AuthenticationException("User not found") {});
+//
+//            return UserMapper.toLoginResponseDTO(user);
+//        } catch (BadCredentialsException e) {
+//            throw new AuthenticationException("Invalid email or password") {};
+//        } catch (Exception e) {
+
+//            throw new RuntimeException("Unexpected error occurred", e);
+//        }
+//    }
+
     @Override
     public LoginResponseDto loginUser(LoginRequestDto loginRequestDto) throws AuthenticationException {
         try {
             Authentication authentication = authenticationManager.authenticate(
-                    new UsernamePasswordAuthenticationToken(
-                            loginRequestDto.getEmail().toLowerCase(),
-                            loginRequestDto.getPassword()
-                    )
+                    new UsernamePasswordAuthenticationToken(loginRequestDto.getEmail(), loginRequestDto.getPassword())
             );
-
-            User user = userRepository.findByEmail(loginRequestDto.getEmail())
-                    .orElseThrow(() -> new AuthenticationException("User not found") {});
-
-            return UserMapper.toLoginResponseDTO(user);
+            if (authentication.isAuthenticated()) {
+                String token = jwtHelper.generateToken(loginRequestDto.getEmail());
+                User user = userRepository.findByEmail(loginRequestDto.getEmail())
+                        .orElseThrow(() -> new RuntimeException("User not found"));
+                return UserMapper.toLoginResponseDTO(user, token);
+            } else {
+                throw new RuntimeException("Invalid email or password");
+            }
         } catch (BadCredentialsException e) {
-            throw new AuthenticationException("Invalid email or password") {};
-        } catch (Exception e) {
-            // Log the exception and rethrow if necessary
-            throw new RuntimeException("Unexpected error occurred", e);
+            throw new AuthenticationException("Invalid email or password");
         }
     }
-
 }
 

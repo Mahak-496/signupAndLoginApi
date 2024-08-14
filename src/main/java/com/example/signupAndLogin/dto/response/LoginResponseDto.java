@@ -5,11 +5,12 @@ import lombok.Data;
 
 @Data
 @Builder
-public class LoginResponseDto {
+public  class LoginResponseDto {
     private int id;
     private String username;
     private String email;
     private String gender;
     private String phoneNumber;
-    private String Address;
+    private String address;
+    private String token;
 }

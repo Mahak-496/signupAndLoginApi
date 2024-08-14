@@ -38,14 +38,15 @@ public class UserMapper {
                 .build();
     }
 
-    public static LoginResponseDto toLoginResponseDTO(User user) {
+    public static LoginResponseDto toLoginResponseDTO(User user, String token) {
         return LoginResponseDto.builder()
                 .id(user.getId())
                 .username(user.getUsername())
                 .email(user.getEmail())
                 .gender(user.getGender())
                 .phoneNumber(user.getPhoneNumber())
-                .Address(user.getAddress())
+                .address(user.getAddress())
+                .token(token)
                 .build();
     }
 }

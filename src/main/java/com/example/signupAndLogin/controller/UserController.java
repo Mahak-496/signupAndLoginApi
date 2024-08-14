@@ -43,34 +43,62 @@ public class UserController {
         }
     }
 
+//    @PostMapping("/api/auth/login")
+//    public ResponseEntity<ApiResponse> loginUser(@RequestBody LoginRequestDto loginRequestDto) {
+//        try {
+//
+//            LoginResponseDto response = userService.loginUser(loginRequestDto);
+//            ApiResponse apiResponse = ApiResponse.builder()
+//                    .message("Login successful")
+//                    .data(response)
+//                    .statusCode(HttpStatus.OK.value())
+//                   .build();
+//
+//            return ResponseEntity.ok(apiResponse);
+//       } catch (AuthenticationException e) {
+//            ApiResponse apiResponse = ApiResponse.builder()
+//                    .message("Invalid email or password")
+//                   .statusCode(HttpStatus.INTERNAL_SERVER_ERROR.value())
+//                    .build();
+//
+//            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(apiResponse);
+//        } catch (Exception e) {
+//            ApiResponse apiResponse = ApiResponse.builder()
+//                    .message("An error occurred")
+//                    .statusCode(HttpStatus.INTERNAL_SERVER_ERROR.value())
+//                    .build();
+//
+//            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(apiResponse);
+//        }
+//    }
+
+
+
     @PostMapping("/api/auth/login")
     public ResponseEntity<ApiResponse> loginUser(@RequestBody LoginRequestDto loginRequestDto) {
         try {
-
             LoginResponseDto response = userService.loginUser(loginRequestDto);
             ApiResponse apiResponse = ApiResponse.builder()
                     .message("Login successful")
                     .data(response)
                     .statusCode(HttpStatus.OK.value())
-                   .build();
-
+                    .build();
             return ResponseEntity.ok(apiResponse);
-       } catch (AuthenticationException e) {
+        } catch (AuthenticationException e) {
             ApiResponse apiResponse = ApiResponse.builder()
                     .message("Invalid email or password")
-                   .statusCode(HttpStatus.INTERNAL_SERVER_ERROR.value())
+                    .statusCode(HttpStatus.UNAUTHORIZED.value())
                     .build();
-
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(apiResponse);
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(apiResponse);
         } catch (Exception e) {
             ApiResponse apiResponse = ApiResponse.builder()
                     .message("An error occurred")
                     .statusCode(HttpStatus.INTERNAL_SERVER_ERROR.value())
                     .build();
-
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(apiResponse);
         }
     }
+
 
 
     @ExceptionHandler(Exception.class)
