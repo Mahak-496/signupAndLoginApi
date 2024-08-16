@@ -103,13 +103,25 @@ public class UserController {
         try {
             String token = authorizationHeader.substring(7);
             RegistrationResponseDto user = userService.getUserByToken(token);
-            return ResponseEntity.ok(user);
+            ApiResponse apiResponse = ApiResponse.builder()
+                    .message("User details fetched successfully")
+                    .data(user)
+                    .statusCode(HttpStatus.OK.value())
+                    .build();
+            return ResponseEntity.ok(apiResponse);
 
         } catch (AuthenticationException e) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(e.getMessage());
-
+            ApiResponse apiResponse = ApiResponse.builder()
+                    .message(e.getMessage())
+                    .statusCode(HttpStatus.UNAUTHORIZED.value())
+                    .build();
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(apiResponse);
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An error occurred while processing the request");
+            ApiResponse apiResponse = ApiResponse.builder()
+                    .message("An error occurred while processing the request")
+                    .statusCode(HttpStatus.INTERNAL_SERVER_ERROR.value())
+                    .build();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(apiResponse);
         }
     }
 

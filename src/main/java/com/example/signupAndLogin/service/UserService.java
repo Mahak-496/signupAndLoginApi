@@ -13,6 +13,7 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -77,15 +78,10 @@ public class UserService implements IUserService {
         try {
             String username = jwtHelper.extractUsername(token);
 
-//            if (username == null ) {
-//                throw new AuthenticationException("Invalid or expired token") {};
-//            }
-
-            User user= userRepository.findByEmail(username)
-                    .orElseThrow(() -> new AuthenticationException("User not found") {});
+            User user = userRepository.findByEmail(username)
+                    .orElseThrow(() -> new UsernameNotFoundException("User not found"));
 
             return UserMapper.toRegistrationResponseDTO(user);
-
 
         } catch (Exception e) {
             throw new RuntimeException("An error occurred while fetching user details", e);

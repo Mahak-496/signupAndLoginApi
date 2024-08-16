@@ -1,6 +1,5 @@
 
 package com.example.signupAndLogin.configuration;
-
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.servlet.FilterChain;
@@ -28,11 +27,9 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     @Autowired
     @Lazy
     private UserDetailsService userDetailsService;
-
     @Override
     protected void doFilterInternal(@NonNull HttpServletRequest request, @NonNull HttpServletResponse response, @NonNull FilterChain filterChain)
             throws ServletException, IOException {
-
         final String authorizationHeader = request.getHeader("Authorization");
         String token = null;
         String username = null;
@@ -49,11 +46,23 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
                 response.setContentType("application/json");
                 response.getWriter().write(new ObjectMapper().writeValueAsString(errorResponse));
+                return;
+            } catch (Exception e) {
+                ErrorResponse errorResponse = new ErrorResponse(
+                        HttpServletResponse.SC_UNAUTHORIZED,
+                        "Unauthorized",
+                        "Token processing error"
+                );
+                response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                response.setContentType("application/json");
+                response.getWriter().write(new ObjectMapper().writeValueAsString(errorResponse));
+                return;
             }
         } else {
             filterChain.doFilter(request, response);
             return;
         }
+
         if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
             UserDetails userDetails = userDetailsService.loadUserByUsername(username);
 
@@ -64,21 +73,21 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
                 SecurityContextHolder.getContext().setAuthentication(authentication);
             } else {
-
-                response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-                response.setContentType("application/json");
-                response.getWriter().write(new ObjectMapper().writeValueAsString(new ErrorResponse(
+                ErrorResponse errorResponse = new ErrorResponse(
                         HttpServletResponse.SC_UNAUTHORIZED,
                         "Unauthorized",
                         "Token is invalid or expired"
-                )));
+                );
+                response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                response.setContentType("application/json");
+                response.getWriter().write(new ObjectMapper().writeValueAsString(errorResponse));
                 return;
             }
         }
-
         filterChain.doFilter(request, response);
     }
 }
+
 
 
 
